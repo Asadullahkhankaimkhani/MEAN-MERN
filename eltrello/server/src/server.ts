@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import mongoose from 'mongoose';
+import * as UserControllers from '../controller/user.controller';
 
 const app = express();
 const httpServer = createServer(app);
@@ -12,9 +13,14 @@ const io = new Server(httpServer, {
   },
 });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1>');
+  res.send('<h1>Server is Running</h1>');
 });
+
+app.post('/api/users', UserControllers.userRegister);
 
 io.on('connection', () => {
   console.log('Connected');
