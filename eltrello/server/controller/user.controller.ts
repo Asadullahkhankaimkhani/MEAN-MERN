@@ -40,3 +40,30 @@ export const userRegister = async (
     next(error as Error);
   }
 };
+
+export const userLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email }).select('+password');
+    const error = { emailOrPassword: 'Incorrect email or password' };
+
+    if (!user) {
+      return res.status(400).json(error);
+    }
+
+    const isSamePassword = await user.comparePassword(password);
+
+    if (!isSamePassword) {
+      return res.status(400).json(error);
+    }
+
+    res.send(normalizeUsername(user));
+  } catch (error) {
+    next(error as Error);
+  }
+};
